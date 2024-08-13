@@ -6,6 +6,5 @@ examRouter.post("/create", examControllers.createExam);
 examRouter.get("/", examControllers.getAllExams);
 examRouter.delete("/delete/:id", examControllers.deleteExam);
 examRouter.put("/add/subject/:title", examControllers.addSubject);
-examRouter.post("/add/ssss/:title", examControllers.addSubject);
 
 module.exports = examRouter;
