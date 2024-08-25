@@ -18,7 +18,7 @@ const examSchema = mongoose.Schema({
     date: {
         type: Date,
         required: [true, 'Please insert the date for the exam.'],
-    },
+    }
       
 });
 
