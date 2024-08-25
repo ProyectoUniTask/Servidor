@@ -5,6 +5,7 @@ const examControllers = require("../controllers/exam.controler");
 examRouter.post("/create", examControllers.createExam);
 examRouter.get("/", examControllers.getAllExams);
 examRouter.delete("/delete/:id", examControllers.deleteExam);
-examRouter.put("/add/subject/:title", examControllers.addSubject);
+examRouter.get("/:_id", examControllers.getExamById);
+examRouter.put("/update/:_id", examControllers.updateExam);
 
 module.exports = examRouter;

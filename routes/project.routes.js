@@ -7,7 +7,8 @@ projectRouter.post('/register', userControllers.addUser )
 projectRouter.post('/login', userControllers.loginUser);
 projectRouter.post('/create', projectControllers.createProject);
 projectRouter.get('/', projectControllers.getAllProjects);
-projectRouter.delete('/delete/:id', projectControllers.deleteProject);
-projectRouter.put('/add/subject/:title', projectControllers.addSubject);
+projectRouter.delete('/delete/:_id', projectControllers.deleteProject);
+projectRouter.get('/:_id', projectControllers.getProjectById);
+projectRouter.put('/update/:_id', projectControllers.updateProject);
 
 module.exports = projectRouter;

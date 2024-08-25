@@ -1,5 +1,4 @@
 const Grade = require('../model/grade.model');
-const { Subject } = require('../model/subject.Model');
 
 module.exports.createGrade = async (req, res) => {
     try {
@@ -19,6 +18,20 @@ module.exports.getAllGrades = async (req, res) => {
     }
 };
 
+module.exports.getGradeById = (req, res) => {
+    Grade.findOne({_id: req.params._id})
+        .then((foundGrade) => {
+            if(! foundGrade){
+                res.statusMessage = 'Nota no encontrada.';
+                return res.status(404).json({mensaje: 'Nota no encontrada.'}); 
+            }
+
+            return res.status(200).json(foundGrade);
+        })
+        .catch((error) => {
+            return res.status(400).json(error);
+        });
+};
 module.exports.deleteGrade = async (req, res) => {
     try {
         const grade = await Grade.findOneAndDelete({ _id: req.params.id });
@@ -27,39 +40,34 @@ module.exports.deleteGrade = async (req, res) => {
         }
         res.status(204).json({ message: "Grade successfully deleted." });
     } catch (error) {
-        console.error('Error deleting grade:', error);
+        console.error('Error deleting exam:', error);
         res.status(400).json({ message: error.message });
     }
 };
+module.exports.updateGrade = (req, res) => {
+    const toUpdate = {};
+    const {title, subject, description, grade} = req.body;
+    
+    if(title){
+        toUpdate.title = title;
+    }
 
+    if(subject){
+        toUpdate.subject = subject;
+    }
 
-module.exports.addSubject = (req, res) => {
-    Subject.findOne({ name: req.body.name })
-        .then((foundSubject) => {
-            if (!foundSubject) {
-                res.statusMessage = 'Subject not found.';
-                return res.status(404).json({ message: 'Subject not found.' });
-            }
+    if(description){
+        toUpdate.description = description;
+    }
+    if(grade){
+        toUpdate.date = grade;
+    }
 
-            Grade.findOneAndUpdate(
-                { title: req.body.title },
-                { $push: { Subject: foundSubject } },
-                { new: true }
-            )
-                .then((updatedGrade) => {
-                    if (!updatedGrade) {
-                        res.statusMessage = 'Grade not found.';
-                        return res.status(404).json({ message: 'Grade not found.' });
-                    }
-                    return res.status(200).json(updatedGrade);
-                })
-                .catch((error) => {
-                    console.error('Error updating grade:', error);
-                    return res.status(400).json({ message: error.message });
-                });
+    Grade.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
+        .then((updatedGrade) => {
+            return res.status(200).json(updatedGrade);
         })
         .catch((error) => {
-            console.error('Error finding grade:', error);
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json(error);
         });
 };

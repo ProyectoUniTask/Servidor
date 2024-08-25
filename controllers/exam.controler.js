@@ -1,5 +1,4 @@
 const Exam = require('../model/exam.model');
-const { Subject } = require('../model/subject.Model');
 
 module.exports.createExam = async (req, res) => {
     try {
@@ -32,34 +31,44 @@ module.exports.deleteExam = async (req, res) => {
     }
 };
 
-
-module.exports.addSubject = (req, res) => {
-    Subject.findOne({ name: req.body.name })
-        .then((foundSubject) => {
-            if (!foundSubject) {
-                res.statusMessage = 'Subject not found.';
-                return res.status(404).json({ message: 'Subject not found.' });
+module.exports.getExamById = (req, res) => {
+    Exam.findOne({_id: req.params._id})
+        .then((foundExam) => {
+            if(! foundExam){
+                res.statusMessage = 'Examen no encontrado.';
+                return res.status(404).json({mensaje: 'Examen no encontrado.'}); 
             }
 
-            Exam.findOneAndUpdate(
-                { title: req.body.title },
-                { $push: { Subject: foundSubject } },
-                { new: true }
-            )
-                .then((updatedExam) => {
-                    if (!updatedExam) {
-                        res.statusMessage = 'Exam not found.';
-                        return res.status(404).json({ message: 'Exam not found.' });
-                    }
-                    return res.status(200).json(updatedExam);
-                })
-                .catch((error) => {
-                    console.error('Error updating project:', error);
-                    return res.status(400).json({ message: error.message });
-                });
+            return res.status(200).json(foundExam);
         })
         .catch((error) => {
-            console.error('Error finding subject:', error);
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json(error);
+        });
+};
+module.exports.updateExam = (req, res) => {
+    const toUpdate = {};
+    const {title, subject, description, date} = req.body;
+    
+    if(title){
+        toUpdate.title = title;
+    }
+
+    if(subject){
+        toUpdate.subject = subject;
+    }
+
+    if(description){
+        toUpdate.description = description;
+    }
+    if(date){
+        toUpdate.date = date;
+    }
+
+    Exam.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
+        .then((updatedExam) => {
+            return res.status(200).json(updatedExam);
+        })
+        .catch((error) => {
+            return res.status(400).json(error);
         });
 };

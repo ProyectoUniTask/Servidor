@@ -1,5 +1,4 @@
 const Project = require('../model/project.model');
-const { Subject } = require('../model/subject.Model');
 
 module.exports.createProject = async (req, res) => {
     try {
@@ -32,35 +31,46 @@ module.exports.deleteProject = async (req, res) => {
     }
 };
 
-
-module.exports.addSubject = (req, res) => {
-    Subject.findOne({ name: req.body.name })
-        .then((foundSubject) => {
-            if (!foundSubject) {
-                res.statusMessage = 'Subject not found.';
-                return res.status(404).json({ message: 'Subject not found.' });
+module.exports.getProjectById = (req, res) => {
+    Project.findOne({_id: req.params._id})
+        .then((foundProject) => {
+            if(! foundProject){
+                res.statusMessage = 'Proyecto no encontrado.';
+                return res.status(404).json({mensaje: 'Proyecto no encontrado.'}); 
             }
 
-            Project.findOneAndUpdate(
-                { title: req.body.title },
-                { $push: { Subject: foundSubject } },
-                { new: true }
-            )
-                .then((updatedProject) => {
-                    if (!updatedProject) {
-                        res.statusMessage = 'Project not found.';
-                        return res.status(404).json({ message: 'Project not found.' });
-                    }
-                    return res.status(200).json(updatedProject);
-                })
-                .catch((error) => {
-                    console.error('Error updating project:', error);
-                    return res.status(400).json({ message: error.message });
-                });
+            return res.status(200).json(foundProject);
         })
         .catch((error) => {
-            console.error('Error finding subject:', error);
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json(error);
         });
 };
+module.exports.updateProject = (req, res) => {
+    const toUpdate = {};
+    const {title, subject, description, dueDate} = req.body;
+    
+    if(title){
+        toUpdate.title = title;
+    }
+
+    if(subject){
+        toUpdate.subject = subject;
+    }
+
+    if(description){
+        toUpdate.description = description;
+    }
+    if(dueDate){
+        toUpdate.dueDate = dueDate;
+    }
+
+    Project.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
+        .then((updatedProject) => {
+            return res.status(200).json(updatedProject);
+        })
+        .catch((error) => {
+            return res.status(400).json(error);
+        });
+};
+
 
