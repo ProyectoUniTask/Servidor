@@ -63,3 +63,30 @@ module.exports.addSubject = (req, res) => {
             return res.status(400).json({ message: error.message });
         });
 };
+
+module.exports.getAllExamById = (req, res) => {
+    Exam.findById(req.params.id)
+        .then((exam) => {
+            if (!exam) {
+                return res.status(404).json({ message: 'Exam not found' });
+            }
+            res.status(200).json(exam);
+        })
+        .catch((error) => {
+            console.log(error.message);
+            res.status(400).json(error.message);
+        });
+};
+
+module.exports.updateExam = async (req, res) => {
+    try {
+        const examUpdate = await Exam.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!examUpdate) {
+            return res.status(404).json({ message: 'Subject not found' });
+        }
+        return res.status(200).json(examUpdate);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(400).json({ message: error.message });
+    }
+};
