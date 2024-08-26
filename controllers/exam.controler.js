@@ -31,50 +31,6 @@ module.exports.deleteExam = async (req, res) => {
     }
 };
 
-module.exports.getExamById = (req, res) => {
-    Exam.findOne({_id: req.params._id})
-        .then((foundExam) => {
-            if(! foundExam){
-                res.statusMessage = 'Examen no encontrado.';
-                return res.status(404).json({mensaje: 'Examen no encontrado.'}); 
-            }
-
-            return res.status(200).json(foundExam);
-        })
-        .catch((error) => {
-            return res.status(400).json(error);
-        });
-};
-<<<<<<< HEAD
-module.exports.updateExam = (req, res) => {
-    const toUpdate = {};
-    const {title, subject, description, date} = req.body;
-    
-    if(title){
-        toUpdate.title = title;
-    }
-
-    if(subject){
-        toUpdate.subject = subject;
-    }
-
-    if(description){
-        toUpdate.description = description;
-    }
-    if(date){
-        toUpdate.date = date;
-    }
-
-    Exam.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
-        .then((updatedExam) => {
-            return res.status(200).json(updatedExam);
-        })
-        .catch((error) => {
-            return res.status(400).json(error);
-        });
-};
-=======
-
 module.exports.getAllExamById = (req, res) => {
     Exam.findById(req.params.id)
         .then((exam) => {
@@ -101,4 +57,3 @@ module.exports.updateExam = async (req, res) => {
         return res.status(400).json({ message: error.message });
     }
 };
->>>>>>> 109582bddb39228c168deb614aeaf127940d1462

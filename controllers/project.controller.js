@@ -32,45 +32,28 @@ module.exports.deleteProject = async (req, res) => {
 };
 
 module.exports.getProjectById = (req, res) => {
-    Project.findOne({_id: req.params._id})
-        .then((foundProject) => {
-            if(! foundProject){
-                res.statusMessage = 'Proyecto no encontrado.';
-                return res.status(404).json({mensaje: 'Proyecto no encontrado.'}); 
+    Project.findById(req.params.id)
+        .then((project) => {
+            if (!project) {
+                return res.status(404).json({ message: 'Project not found' });
             }
-
-            return res.status(200).json(foundProject);
+            res.status(200).json(project);
         })
         .catch((error) => {
-            return res.status(400).json(error);
-        });
-};
-module.exports.updateProject = (req, res) => {
-    const toUpdate = {};
-    const {title, subject, description, dueDate} = req.body;
-    
-    if(title){
-        toUpdate.title = title;
-    }
-
-    if(subject){
-        toUpdate.subject = subject;
-    }
-
-    if(description){
-        toUpdate.description = description;
-    }
-    if(dueDate){
-        toUpdate.dueDate = dueDate;
-    }
-
-    Project.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
-        .then((updatedProject) => {
-            return res.status(200).json(updatedProject);
-        })
-        .catch((error) => {
-            return res.status(400).json(error);
+            console.log(error.message);
+            res.status(400).json({ message: error.message });
         });
 };
 
-
+module.exports.updateProject = async (req, res) => {
+    try {
+        const projectUpdate = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!projectUpdate) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        return res.status(200).json(projectUpdate);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(400).json({ message: error.message });
+    }
+};

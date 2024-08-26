@@ -18,20 +18,33 @@ module.exports.getAllGrades = async (req, res) => {
     }
 };
 
-module.exports.getGradeById = (req, res) => {
-    Grade.findOne({_id: req.params._id})
-        .then((foundGrade) => {
-            if(! foundGrade){
-                res.statusMessage = 'Nota no encontrada.';
-                return res.status(404).json({mensaje: 'Nota no encontrada.'}); 
-            }
+module.exports.deleteGrade = async (req, res) => {
+    try {
+        const grade = await Grade.findOneAndDelete({ _id: req.params.id });
+        if (!grade) {
+            return res.status(404).json({ message: "Grade not found." });
+        }
+        res.status(204).json({ message: "Grade successfully deleted." });
+    } catch (error) {
+        console.error('Error deleting grade:', error);
+        res.status(400).json({ message: error.message });
+    }
+};
 
-            return res.status(200).json(foundGrade);
+module.exports.getGradeById = (req, res) => {
+    Grade.findById(req.params.id)
+        .then((grade) => {
+            if (!grade) {
+                return res.status(404).json({ message: 'Grade not found' });
+            }
+            res.status(200).json(grade);
         })
         .catch((error) => {
-            return res.status(400).json(error);
+            console.log(error.message);
+            res.status(400).json({ message: error.message });
         });
 };
+
 module.exports.deleteGrade = async (req, res) => {
     try {
         const grade = await Grade.findOneAndDelete({ _id: req.params.id });
@@ -44,30 +57,16 @@ module.exports.deleteGrade = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-module.exports.updateGrade = (req, res) => {
-    const toUpdate = {};
-    const {title, subject, description, grade} = req.body;
-    
-    if(title){
-        toUpdate.title = title;
-    }
 
-    if(subject){
-        toUpdate.subject = subject;
+module.exports.updateGrade = async (req, res) => {
+    try {
+        const gradeUpdate = await Grade.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!gradeUpdate) {
+            return res.status(404).json({ message: 'Grade not found' });
+        }
+        return res.status(200).json(gradeUpdate);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(400).json({ message: error.message });
     }
-
-    if(description){
-        toUpdate.description = description;
-    }
-    if(grade){
-        toUpdate.date = grade;
-    }
-
-    Grade.findOneAndUpdate({_id: req.params._id}, toUpdate, {new: true})
-        .then((updatedGrade) => {
-            return res.status(200).json(updatedGrade);
-        })
-        .catch((error) => {
-            return res.status(400).json(error);
-        });
 };

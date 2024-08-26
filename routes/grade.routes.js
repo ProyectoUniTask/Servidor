@@ -1,11 +1,14 @@
 const express = require('express');
-const gradeRouter = express.Router();
-const gradeControllers = require ('../controllers/grade.controller');
+const projectRouter = express.Router();
+const userControllers = require('../controllers/user.controllers');
+const projectControllers = require ('../controllers/project.controller')
 
-gradeRouter.post('/create', gradeControllers.createGrade);
-gradeRouter.get('/', gradeControllers.getAllGrades);
-gradeRouter.delete('/delete/:id', gradeControllers.deleteGrade);
-gradeRouter.get('/:_id', gradeControllers.getGradeById);
-gradeRouter.put('/update/:_id', gradeControllers.updateGrade);
+projectRouter.post('/register', userControllers.addUser )
+projectRouter.post('/login', userControllers.loginUser);
+projectRouter.post('/create', projectControllers.createProject);
+projectRouter.get('/', projectControllers.getAllProjects);
+projectRouter.delete('/delete/:id', projectControllers.deleteProject);
+projectRouter.get('/:id', projectControllers.getProjectById);
+projectRouter.put('/update/:id', projectControllers.updateProject);
 
-module.exports = gradeRouter;
+module.exports = projectRouter;
